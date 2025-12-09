@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+
 /**
  * Classe che rappresenta la risorsa condivisa fra i due thread
  * da gestire con metodi "synchronized"
@@ -7,26 +8,22 @@ import java.util.ArrayList;
  * @version 1.0
  */
 public class ListaClienti {
-    /*variabili d'istanza*/
+
     private ArrayList<Integer> listaNumeri;
     private int ultimoArrivo;
     private int ultimoServito;
-    private final int numeroMassimo = 10;
+    private final int numeroMassimo;
+
     /**
      * constructor
      * settaggio delle variabili di istanza
      */
-    public ListaClienti() {
-        listaNumeri = new ArrayList<Integer>();
+    public ListaClienti(int numeroMassimo) {
+        listaNumeri = new ArrayList<>();
         ultimoArrivo = 0;
         ultimoServito = 0;
+        this.numeroMassimo = numeroMassimo;
     }
-
-    /*synchronized parola chiave che gestisce il meccanismo del lock, ovvero
-     * 1) impedisce ad un altro thread l'esecuzione di tale
-     * metodo, se un precedente thread lo sta già eseguendo
-     * 2) senza di lui wait e notify non possono essere usati
-     * si genera l'eccezione : IllegalMonitorStateException,*/
 
     /**
      * metodo eseguito da un thread della Classe Sportello
@@ -35,10 +32,9 @@ public class ListaClienti {
      * else resta di attesa che arrivi...(notify)
      * @return Integer ultimoServito synchronized
      */
-    public synchronized Integer rimuoviCliente() throws
-            InterruptedException {
-        while (ultimoServito >= ultimoArrivo) { //5  5
-            System.out.println("non ci sono arrivi dopo l'ultimo servito");
+    public synchronized Integer rimuoviCliente() throws InterruptedException {
+        while (ultimoServito >= ultimoArrivo) {
+            System.out.println("Non ci sono arrivi dopo l'ultimo servito");
             wait();
         }
         ultimoServito++;
@@ -51,10 +47,11 @@ public class ListaClienti {
      * e inserisce tale nuovo numero / ticket nella lista numeri
      * @return Integer: ultimoArrivo o null se gli arrivi saturano
      */
-    public synchronized Integer addCliente() {
+    public synchronized Integer addCliente(String nomeTotem) {
         if (ultimoArrivo < numeroMassimo) {
             ultimoArrivo++;
             listaNumeri.add(ultimoArrivo);
+            System.out.println("[" + nomeTotem + "] Arrivo Cliente Numero \t " + ultimoArrivo);
             notify();
             return ultimoArrivo;
         }
